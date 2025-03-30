@@ -21,12 +21,12 @@ y = data["Aptitud"]
 
 # Partición 60% (train) y 40% (test)
 x_train, x_rest, y_train, y_rest = train_test_split(
-    x, y, test_size=0.4, random_state=123
+    x, y, test_size=0.4, random_state=321
 )
 
 # Partición "rest" en 2 mitades
 x_val, x_test, y_val, y_test = train_test_split(
-    x_rest, y_rest, test_size=0.5, random_state=321
+    x_rest, y_rest, test_size=0.5, random_state=123
 )
 
 model = LogisticRegression()
@@ -39,5 +39,5 @@ y_pred = model.predict(x_test)
 print("Datos reales:\n", y_test)
 print("Datos predichos:\n", y_pred)
 
-with open("model.joblib", "wb") as f:
+with open("./models/model.joblib", "wb") as f:
     dump(model, f)

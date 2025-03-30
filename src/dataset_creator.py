@@ -47,7 +47,7 @@ for _ in range(num_entradas):
         ]
     )
 
-with open("dataset.csv", "w", newline="", encoding="utf-8") as archivo:
+with open("./data/dataset.csv", "w", newline="", encoding="utf-8") as archivo:
     writer = csv.writer(archivo)
     writer.writerow(["Experiencia", "Educacion", "Python", "Puntaje", "Aptitud"])
     writer.writerows(datos)
