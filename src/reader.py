@@ -19,23 +19,17 @@ data = pd.concat([data, edu_encoded], axis=1).drop(columns=["Educacion"])
 x = data.drop(columns=["Aptitud"])
 y = data["Aptitud"]
 
-# Partición 60% (train) y 40% (test)
-x_train, x_rest, y_train, y_rest = train_test_split(
-    x, y, test_size=0.4, random_state=321
-)
-
-# Partición "rest" en 2 mitades
-x_val, x_test, y_val, y_test = train_test_split(
-    x_rest, y_rest, test_size=0.5, random_state=123
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, train_size=0.7, random_state=123
 )
 
 model = LogisticRegression()
 model.fit(x_train, y_train)
+y_pred = model.predict(x_test)
 
 print(f"Exactitud promedio entrenamiento: {model.score(x_train,y_train)}")
-print(f"Exactitud promedio validación: {model.score(x_val, y_val)}")
+print(f"Exactitud promedio validación: {model.score(x_test, y_test)}")
 
-y_pred = model.predict(x_test)
 print("Datos reales:\n", y_test)
 print("Datos predichos:\n", y_pred)
 
