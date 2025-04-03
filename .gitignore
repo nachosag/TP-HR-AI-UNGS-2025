@@ -2,3 +2,6 @@
 data/resume.ipynb
 src/tempCodeRunnerFile.py
 data/multiple_models.ipynb
+data/kevin.ipynb
+src/mlb.py
+src/count_vectorizer.py
