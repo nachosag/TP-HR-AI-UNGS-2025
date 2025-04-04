@@ -35,3 +35,4 @@ print("Datos predichos:\n", y_pred)
 
 with open("./models/model.joblib", "wb") as f:
     dump(model, f)
+    
