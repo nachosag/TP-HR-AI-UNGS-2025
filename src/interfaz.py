@@ -31,7 +31,7 @@ area_posible = ["Web", "Móvil", "Videojuegos"]
 label_encoder_area.fit(area_posible)
 
 # Cargar el modelo entrenado
-modelo = joblib.load('./models/model.joblib')
+modelo = joblib.load('./models/DecisionTreeClassifier.joblib')
 #modelo = joblib.load('modelo_entrenado.pkl', mmap_mode='r')
 
 
