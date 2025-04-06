@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from dataset_sctructure import (
+from constants import (
     plantilla,
     areas,
     niveles_educativos,
