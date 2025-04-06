@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-import pandas as pd
-from constants import plantilla, areas, niveles_educativos
-from .menu import init_menu
+from constants import areas, niveles_educativos
+from .skills import actualizar_checkboxes
+from model_handler import procesar_candidato
 
 # Variables to store dynamic UI elements
 habilidades_vars = {}
@@ -26,12 +25,28 @@ def init_input(root, show_menu_callback):
     tk.Label(frame_input, text="Experiencia (0-20 años):").grid(
         row=1, column=0, sticky=tk.W, padx=5, pady=5
     )
+
     entry_experiencia = tk.Entry(frame_input, width=30)
     entry_experiencia.grid(row=1, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
 
+    # Model (Combobox)
+    tk.Label(frame_input, text="Modelo:").grid(
+        row=2, column=0, sticky=tk.W, padx=5, pady=5
+    )
+    var_modelo = tk.StringVar()
+    combo_modelo = ttk.Combobox(
+        frame_input,
+        textvariable=var_modelo,
+        values=["DecisionTreeClassifier", "LogisticRegression"],
+        state="readonly",
+        width=27,
+    )
+    combo_modelo.grid(row=2, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
+    var_modelo.set("Seleccione un modelo")
+
     # Education (Combobox)
     tk.Label(frame_input, text="Educación:").grid(
-        row=2, column=0, sticky=tk.W, padx=5, pady=5
+        row=3, column=0, sticky=tk.W, padx=5, pady=5
     )
     var_educacion = tk.StringVar()
     combo_educacion = ttk.Combobox(
@@ -41,12 +56,12 @@ def init_input(root, show_menu_callback):
         state="readonly",
         width=27,
     )
-    combo_educacion.grid(row=2, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
-    var_educacion.set("")
+    combo_educacion.grid(row=3, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
+    var_educacion.set("Seleccione su nivel educativo")
 
     # Area (Combobox)
     tk.Label(frame_input, text="Área:").grid(
-        row=3, column=0, sticky=tk.W, padx=5, pady=5
+        row=4, column=0, sticky=tk.W, padx=5, pady=5
     )
     var_area = tk.StringVar()
     combo_area = ttk.Combobox(
@@ -56,42 +71,24 @@ def init_input(root, show_menu_callback):
         state="readonly",
         width=27,
     )
-    combo_area.grid(row=3, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
-    var_area.set("")
+    combo_area.grid(row=4, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
+    var_area.set("Seleccione el área")
 
     # # Habilidades (Dynamic Checkboxes)
     tk.Label(frame_input, text="Habilidades:").grid(
-        row=4, column=0, sticky=tk.NW, padx=5, pady=10
+        row=5, column=0, sticky=tk.NW, padx=5, pady=10
     )
 
     frame_habilidades = tk.Frame(frame_input)
-    frame_habilidades.grid(row=4, column=1, columnspan=2, sticky=tk.W, padx=5)
+    frame_habilidades.grid(row=5, column=1, columnspan=2, sticky=tk.W, padx=5)
 
     # Update skills dynamically based on the selected area
     def actualizar_habilidades(*args):
         """Update the skills checkboxes based on the selected area."""
-        # Clear existing checkboxes
-        for widget in frame_habilidades.winfo_children():
-            widget.destroy()
-        habilidades_vars.clear()
-
-        # Get the selected area
         area_seleccionada = var_area.get()
-
-        # Check if the selected area exists in the keys of the `areas` dictionary
-        if area_seleccionada in areas:
-            habilidades = areas[area_seleccionada]
-            row_hab, col_hab = 0, 0
-            max_cols_hab = 2  # Number of columns for checkboxes
-            for habilidad in habilidades:
-                var = tk.IntVar()
-                chk = tk.Checkbutton(frame_habilidades, text=habilidad, variable=var)
-                chk.grid(row=row_hab, column=col_hab, sticky=tk.W, padx=5, pady=2)
-                habilidades_vars[habilidad] = var
-                col_hab += 1
-                if col_hab >= max_cols_hab:
-                    col_hab = 0
-                    row_hab += 1
+        actualizar_checkboxes(
+            frame_habilidades, habilidades_vars, area_seleccionada, areas
+        )
 
     # Trace the area selection to update skills dynamically
     var_area.trace_add("write", actualizar_habilidades)
@@ -100,7 +97,9 @@ def init_input(root, show_menu_callback):
     tk.Button(
         frame_input,
         text="Agregar candidato",
-        command=lambda: print("Candidato agregado"),
+        command=lambda: agregar_candidato(
+            entry_experiencia, var_modelo, var_educacion, var_area
+        ),
         width=18,
     ).grid(row=10, column=0, padx=5, pady=20)
 
@@ -114,14 +113,13 @@ def init_input(root, show_menu_callback):
     frame_input.pack(fill=tk.BOTH, expand=True)
 
 
-def manejar_agregar_candidato(
-    entry_experiencia, var_educacion, var_area, volver_al_menu_callback
-):
+def agregar_candidato(entry_experiencia, var_modelo, var_educacion, var_area):
     """Handle adding a new candidate."""
     exp = entry_experiencia.get()
+    mod = var_modelo.get()
     edu = var_educacion.get()
     area = var_area.get()
     hab_sel = [hab for hab, var in habilidades_vars.items() if var.get() == 1]
 
-    # if procesar_nuevo_candidato(exp, edu, area, hab_sel):
-    #     volver_al_menu_callback()
+    if procesar_candidato(exp, edu, area, hab_sel):
+        print("Candidate added successfully")
