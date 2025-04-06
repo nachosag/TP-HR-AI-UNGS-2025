@@ -69,7 +69,7 @@ def procesar_nuevo_candidato(experiencia_str, educacion, area, habilidades_selec
     data_nuevo = {"Experiencia": [experiencia], COLUMNA_EDUCACION_CSV: [educacion], COLUMNA_AREA_CSV: [area]}
     for hab in HABILIDADES_LISTA_COMPLETA_CSV: data_nuevo[hab] = [1 if hab in habilidades_seleccionadas else 0]
     nuevo_candidato_df_pred = pd.DataFrame(data_nuevo)
-
+######################################################################################################
     try:
         nuevo_candidato_pred_input = nuevo_candidato_df_pred.copy()
         nuevo_candidato_pred_input[COLUMNA_EDUCACION_CSV] = label_encoder_educacion.transform(nuevo_candidato_pred_input[COLUMNA_EDUCACION_CSV])

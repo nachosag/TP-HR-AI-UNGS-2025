@@ -54,23 +54,34 @@ def procesar_candidato(exp, mod, edu, area, hab_sel):
 
     mms = MinMaxScaler()
     edu_encoder = OrdinalEncoder(edu)
-    ohe = OneHotEncoder(sparse_output=False).set_output(transform="pandas")
+    #ohe = OneHotEncoder(sparse_output=False).set_output(transform="pandas")
 
+    ohe = OneHotEncoder(sparse_output=False)
+    area_encoded = ohe.fit_transform(df[["Area"]])
+    #area_encoded_df = pd.DataFrame(area_encoded, columns=ohe.get_feature_names_out(["Area"]))
 
     df["Experiencia"] = mms.fit_transform(df["Experiencia"])
     df["Educacion"] = edu_encoder.fit_transform(df["Educacion"])
 
-
-    ohe = OneHotEncoder(sparse_output=False)
-    area_encoded = ohe.fit_transform(df[["Area"]])
-    area_encoded_df = pd.DataFrame(area_encoded, columns=ohe.get_feature_names_out(["Area"]))
-
-    # Unir todo
-    df = pd.concat([df.drop(columns=["Area"]), area_encoded_df], axis=1)
-
+    #prediccion = modelo.predict(nuevo_candidato_pred_input)
     prediccion = modelo.predict(df)
     aptitud = "Apto" if prediccion[0] == 1 else "No apto"
     messagebox.showinfo("Éxito", f"Candidato agregado correctamente.\nPredicción: {aptitud}")
 
     return True
 
+
+
+
+
+    # try:
+    #     nuevo_candidato_pred_input = df.copy()
+    #     nuevo_candidato_pred_input["Educacion"] = edu_encoder.transform(nuevo_candidato_pred_input["Educacion"])
+    #     nuevo_candidato_pred_input["Area"] = ohe.fit_transform(nuevo_candidato_pred_input["Area"])
+    #     columnas_requeridas_modelo = list(modelo.feature_names_in_)
+    #     for col in columnas_requeridas_modelo:
+    #             if col not in nuevo_candidato_pred_input.columns: nuevo_candidato_pred_input[col] = 0
+    #     nuevo_candidato_pred_input = nuevo_candidato_pred_input[columnas_requeridas_modelo]
+    # except Exception as e:
+    #     messagebox.showerror("Error de Preparación", f"Error al preparar datos para predicción: {e}\nVerifica la definición de COLUMNAS_MODELO_ENTRENADO.")
+    #     return False
