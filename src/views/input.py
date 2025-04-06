@@ -80,10 +80,10 @@ def init_input(root, show_menu_callback):
 
         # Check if the selected area exists in the keys of the `areas` dictionary
         if area_seleccionada in areas:
-            skills_para_area = areas[area_seleccionada]
+            habilidades = areas[area_seleccionada]
             row_hab, col_hab = 0, 0
             max_cols_hab = 2  # Number of columns for checkboxes
-            for habilidad in skills_para_area:
+            for habilidad in habilidades:
                 var = tk.IntVar()
                 chk = tk.Checkbutton(frame_habilidades, text=habilidad, variable=var)
                 chk.grid(row=row_hab, column=col_hab, sticky=tk.W, padx=5, pady=2)
@@ -97,23 +97,19 @@ def init_input(root, show_menu_callback):
     var_area.trace_add("write", actualizar_habilidades)
 
     # Buttons
-    frame_botones_agregar = tk.Frame(frame_input)
-    frame_botones_agregar.grid(row=5, column=0, columnspan=3, pady=20)
     tk.Button(
-        frame_botones_agregar,
-        text="Agregar Candidato",
-        command=lambda: manejar_agregar_candidato(
-            entry_experiencia, var_educacion, var_area, show_menu_callback
-        ),
+        frame_input,
+        text="Agregar candidato",
+        command=lambda: print("Candidato agregado"),
         width=18,
-    ).pack(side=tk.LEFT, padx=10)
+    ).grid(row=10, column=0, padx=5, pady=20)
 
     tk.Button(
         frame_input,
         text="Volver",
         command=lambda: show_menu_callback(root),
         width=18,
-    ).grid(row=10, column=0, columnspan=3, pady=20)
+    ).grid(row=10, column=1, padx=5, pady=20)
 
     frame_input.pack(fill=tk.BOTH, expand=True)
 
