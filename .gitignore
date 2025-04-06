@@ -1,9 +1,3 @@
 .venv
-data/resume.ipynb
 src/tempCodeRunnerFile.py
-data/multiple_models.ipynb
-data/kevin.ipynb
-src/mlb.py
-src/count_vectorizer.py
-icon x 32.png:Zone.Identifier
-__pycachce__/
+__pycache__/

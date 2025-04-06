@@ -17,7 +17,6 @@ root = tk.Tk()
 root.title("Búsqueda de Candidatos")
 root.config(bg="lightgray")
 root.resizable(False, False)
-root.iconbitmap("images/icon2.ico")
 window_width = 600
 window_height = 600
 centrar_ventana(root, window_width, window_height)
