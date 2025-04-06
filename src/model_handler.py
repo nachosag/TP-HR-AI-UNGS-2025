@@ -2,6 +2,7 @@ import joblib
 from tkinter import messagebox
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder, OneHotEncoder
+import constants
 
 
 def cargar_modelo(mod):
@@ -25,44 +26,51 @@ def verificar_var_candidatos(exp, mod, edu, area):
     except ValueError:
         messagebox.showerror("Error", "Ingrese una experiencia válida (número entero).")
         return None
-
-    if not edu or not area:
+    # if mod.strip().lower() in ["", "seleccione un modelo"]:
+    #     messagebox.showerror("Error", "Seleccione un modelo.")
+    #     return None
+    if mod == 'Seleccione un modelo':
+        messagebox.showerror("Error", "Seleccione un modelo.")
+        return None    
+    
+    if not edu or not area or edu == "Seleccione su nivel educativo" or area == "Seleccione el área":
         messagebox.showerror("Error", "Seleccione educación y área.")
         return None
-    if mod == "Seleccione un modelo":
-        messagebox.showerror("Error", "Seleccione un modelo.")
-        return None
+    return True
+
 
 
 def procesar_candidato(exp, mod, edu, area, hab_sel):
     """Procesa la información del candidato para la predicción."""
-    verificar_var_candidatos(exp, mod, edu, area)
+    if verificar_var_candidatos(exp, mod, edu, area) is None:
+        return False  # Importante: detener ejecución si hay error
     modelo = cargar_modelo(mod)
     print(exp, mod, edu, area, hab_sel)
 
-    # mms = MinMaxScaler()
-    # orer = OrdinalEncoder()
-    # ohe = OneHotEncoder()
-    # experiencia = mms.fit_transform(exp)
-    # print(experiencia)
+    data_nuevo = {"Experiencia": [exp], "Educacion": [edu], "Area": [area]}
+    for hab in list(set(sum(constants.areas.values(), []))):
+        data_nuevo[hab] = [1 if hab in hab_sel else 0]
+    df = pd.DataFrame(data_nuevo)
 
-    # habilidades_lista = sum(habilidades.values(), [])
-    # habilidades_vector = [1 if hab in hab_sel else 0 for hab in habilidades_lista]
+    mms = MinMaxScaler()
+    edu_encoder = OrdinalEncoder(edu)
+    ohe = OneHotEncoder(sparse_output=False).set_output(transform="pandas")
 
-    # # Crear un DataFrame con la estructura esperada por el modelo
-    # data_candidato = pd.DataFrame([[experiencia, edu, area] + habilidades_vector],
-    #                               columns=["Experiencia", "Educacion", "Area"] + habilidades_lista)
 
-    # # Codificar las variables categóricas (asumiendo que tu modelo fue entrenado con datos codificados)
-    # data_candidato['Educacion'] = label_encoder_educacion.transform(data_candidato['Educacion'])
-    # data_candidato['Area'] = label_encoder_area.transform(data_candidato['Area'])
+    df["Experiencia"] = mms.fit_transform(df["Experiencia"])
+    df["Educacion"] = edu_encoder.fit_transform(df["Educacion"])
 
-    # # Asegurar el orden de las columnas (importante para algunos modelos)
-    # columnas_modelo = list(modelo_cargado.feature_names_in_) if modelo_cargado else []
-    # if columnas_modelo and all(col in data_candidato.columns for col in columnas_modelo):
-    #     data_candidato = data_candidato[columnas_modelo]
-    # elif modelo_cargado:
-    #     messagebox.showerror("Error", "Las columnas del candidato no coinciden con las esperadas por el modelo.")
-    #     return None
 
-    # return data_candidato
+    ohe = OneHotEncoder(sparse_output=False)
+    area_encoded = ohe.fit_transform(df[["Area"]])
+    area_encoded_df = pd.DataFrame(area_encoded, columns=ohe.get_feature_names_out(["Area"]))
+
+    # Unir todo
+    df = pd.concat([df.drop(columns=["Area"]), area_encoded_df], axis=1)
+
+    prediccion = modelo.predict(df)
+    aptitud = "Apto" if prediccion[0] == 1 else "No apto"
+    messagebox.showinfo("Éxito", f"Candidato agregado correctamente.\nPredicción: {aptitud}")
+
+    return True
+
