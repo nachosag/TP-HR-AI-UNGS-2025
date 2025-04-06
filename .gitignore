@@ -6,3 +6,4 @@ data/kevin.ipynb
 src/mlb.py
 src/count_vectorizer.py
 icon x 32.png:Zone.Identifier
+__pycachce__/
