@@ -9,5 +9,5 @@ def predecir(modelo, data):
     return 0
 
 
-def procesar_candidato(experiencia, educacion, area, habilidades):
+def procesar_candidato(exp, mod, edu, area, hab_sel):
     return True

@@ -121,5 +121,5 @@ def agregar_candidato(entry_experiencia, var_modelo, var_educacion, var_area):
     area = var_area.get()
     hab_sel = [hab for hab, var in habilidades_vars.items() if var.get() == 1]
 
-    if procesar_candidato(exp, edu, area, hab_sel):
+    if procesar_candidato(exp, mod, edu, area, hab_sel):
         print("Candidate added successfully")
