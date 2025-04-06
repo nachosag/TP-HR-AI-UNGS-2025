@@ -25,9 +25,9 @@ COLUMNA_PUNTUACION_CSV = "Puntos"
 COLUMNA_AREA_CSV = "Área"
 COLUMNA_EDUCACION_CSV = "Educación"
 COLUMNA_APTITUD_CSV = "Aptitud"
-# COLUMNAS_MODELO_ENTRENADO = [...] # Asegúrate que esto sea correcto para tu modelo
 
-# --- Carga de Datos y Modelo (sin cambios respecto a la versión anterior) ---
+
+# --- Carga de Datos y Modelo 
 try:
     candidatos = pd.read_csv(DATASET_FILENAME)
 except FileNotFoundError:
@@ -37,51 +37,27 @@ except Exception as e:
      messagebox.showerror("Error", f"Error al leer el archivo CSV: {e}")
      exit()
 
-# --- Verificación de columnas ---
-columnas_necesarias = ["Experiencia", COLUMNA_EDUCACION_CSV, COLUMNA_AREA_CSV, COLUMNA_PUNTUACION_CSV, COLUMNA_APTITUD_CSV] + HABILIDADES_LISTA_COMPLETA_CSV
-columnas_faltantes = [col for col in columnas_necesarias if col not in candidatos.columns]
-if columnas_faltantes:
-    messagebox.showwarning("Advertencia", f"Faltan las siguientes columnas en el CSV: {', '.join(columnas_faltantes)}. Algunas funciones podrían no operar correctamente.")
-    for col in columnas_faltantes:
-         if col == COLUMNA_PUNTUACION_CSV or col == "Experiencia": candidatos[col] = 0
-         elif col in HABILIDADES_LISTA_COMPLETA_CSV: candidatos[col] = 0
-         else: candidatos[col] = ""
-
 label_encoder_educacion = LabelEncoder()
 label_encoder_area = LabelEncoder()
 label_encoder_educacion.fit(EDUCACION_POSIBLE_CSV)
 label_encoder_area.fit(AREA_POSIBLE_CSV)
 
-try:
-    modelo = joblib.load(MODEL_FILENAME)
-    # COLUMNAS_MODELO_ENTRENADO = list(modelo.feature_names_in_) # Descomentar si quieres usar las del modelo
-except FileNotFoundError:
-    messagebox.showerror("Error Fatal", f"No se encontró el archivo del modelo: {MODEL_FILENAME}. La aplicación no puede continuar.")
-    exit()
-except Exception as e:
-    messagebox.showerror("Error Fatal", f"Error al cargar el modelo: {e}. La aplicación no puede continuar.")
-    exit()
+modelo = joblib.load(MODEL_FILENAME)
+
 
 
 # --- Funciones Lógicas (sin cambios) ---
 def obtener_mejores(area=None):
-    # ... (código sin cambios) ...
-    if COLUMNA_AREA_CSV not in candidatos.columns or COLUMNA_PUNTUACION_CSV not in candidatos.columns:
-        print(f"Advertencia: Faltan las columnas '{COLUMNA_AREA_CSV}' o '{COLUMNA_PUNTUACION_CSV}' en el DataFrame.")
-        return pd.DataFrame()
-    candidatos[COLUMNA_PUNTUACION_CSV] = pd.to_numeric(candidatos[COLUMNA_PUNTUACION_CSV], errors='coerce').fillna(0)
+
+    #candidatos[COLUMNA_PUNTUACION_CSV] = pd.to_numeric(candidatos[COLUMNA_PUNTUACION_CSV], errors='coerce').fillna(0)  ##quiza dejarlo por las dudas o si el data está vacio
     df_filtrado = candidatos.copy()
     if area:
         if area in AREA_POSIBLE_CSV:
              df_filtrado = df_filtrado[df_filtrado[COLUMNA_AREA_CSV] == area]
-        else:
-             print(f"Advertencia: Área '{area}' no reconocida.")
-             return pd.DataFrame()
     return df_filtrado.sort_values(by=COLUMNA_PUNTUACION_CSV, ascending=False).head(5)
 
 
 def procesar_nuevo_candidato(experiencia_str, educacion, area, habilidades_seleccionadas):
-    # ... (código sin cambios, ya usa los nombres de columna CSV) ...
     global candidatos
     try:
         experiencia = int(experiencia_str)
@@ -89,12 +65,6 @@ def procesar_nuevo_candidato(experiencia_str, educacion, area, habilidades_selec
     except ValueError:
         messagebox.showerror("Error de Validación", "Ingrese una experiencia válida (número entero entre 0 y 20).")
         return False
-    if not educacion or educacion not in EDUCACION_POSIBLE_CSV:
-        messagebox.showerror("Error de Validación", f"Seleccione una educación válida: {', '.join(EDUCACION_POSIBLE_CSV)}.")
-        return False
-    if not area or area not in AREA_POSIBLE_CSV:
-         messagebox.showerror("Error de Validación", f"Seleccione un área válida: {', '.join(AREA_POSIBLE_CSV)}.")
-         return False
 
     data_nuevo = {"Experiencia": [experiencia], COLUMNA_EDUCACION_CSV: [educacion], COLUMNA_AREA_CSV: [area]}
     for hab in HABILIDADES_LISTA_COMPLETA_CSV: data_nuevo[hab] = [1 if hab in habilidades_seleccionadas else 0]
@@ -112,12 +82,8 @@ def procesar_nuevo_candidato(experiencia_str, educacion, area, habilidades_selec
         messagebox.showerror("Error de Preparación", f"Error al preparar datos para predicción: {e}\nVerifica la definición de COLUMNAS_MODELO_ENTRENADO.")
         return False
 
-    try:
-        prediccion = modelo.predict(nuevo_candidato_pred_input)
-        aptitud = "Apto" if prediccion[0] == 1 else "No apto"
-    except Exception as e:
-        messagebox.showerror("Error de Predicción", f"Ocurrió un error al predecir: {e}")
-        return False
+    prediccion = modelo.predict(nuevo_candidato_pred_input)
+    aptitud = "Apto" if prediccion[0] == 1 else "No apto"
 
     data_para_candidatos = {"Experiencia": experiencia, COLUMNA_EDUCACION_CSV: educacion, COLUMNA_AREA_CSV: area, COLUMNA_PUNTUACION_CSV: 0, COLUMNA_APTITUD_CSV: aptitud}
     for hab in HABILIDADES_LISTA_COMPLETA_CSV: data_para_candidatos[hab] = 1 if hab in habilidades_seleccionadas else 0
@@ -173,7 +139,7 @@ def actualizar_y_mostrar_resultados(area=None):
             tabla_resultados.insert("", tk.END, values=valores)
     mostrar_vista(frame_resultados)
 
-# >>> NUEVA FUNCIÓN para actualizar Habilidades <<<
+
 def actualizar_habilidades(*args):
     """Limpia y muestra las habilidades correspondientes al área seleccionada."""
     # Limpiar habilidades anteriores (destruir widgets y limpiar dict)
@@ -205,10 +171,6 @@ def preparar_y_mostrar_agregar():
     entry_experiencia.delete(0, tk.END)
     var_educacion.set("")
     var_area.set("")    # <-- Al setear a "", se disparará actualizar_habilidades y limpiará las skills
-    # No es necesario llamar explícitamente a actualizar_habilidades aquí
-    # porque el .set("") anterior ya lo habrá hecho a través del trace.
-    # Si quieres asegurarte que esté limpio al inicio (antes de la primera selección):
-    # actualizar_habilidades() # Opcional, para limpiar al mostrar inicialmente
 
     mostrar_vista(frame_agregar)
 
