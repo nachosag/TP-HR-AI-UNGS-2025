@@ -10,4 +10,10 @@ def predecir(modelo, data):
 
 
 def procesar_candidato(exp, mod, edu, area, hab_sel):
-    return True
+    """
+    Experiencia: ,
+    Modelo: Seleccione un modelo,
+    Educación: Seleccione su nivel educativo,
+    Área: Seleccione el área,
+    Habilidades: []
+    """

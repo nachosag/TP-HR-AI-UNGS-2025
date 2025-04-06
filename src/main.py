@@ -3,8 +3,7 @@ from controller import show_menu
 from tkinter import ttk
 
 
-def center_window(window, width, height):
-    """Centra la ventana en la pantalla."""
+def centrar_ventana(window, width, height):
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
@@ -17,9 +16,11 @@ def center_window(window, width, height):
 root = tk.Tk()
 root.title("Búsqueda de Candidatos")
 root.config(bg="lightgray")
+root.resizable(False, False)
+root.iconbitmap("images/icon2.ico")
 window_width = 600
 window_height = 600
-center_window(root, window_width, window_height)
+centrar_ventana(root, window_width, window_height)
 
 ttk.Style().theme_use("default")
 
