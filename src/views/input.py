@@ -126,11 +126,12 @@ def agregar_candidato(entry_experiencia, var_modelo, var_educacion, var_area):
     if not validar_entradas(exp, mod, edu, area):
         return
 
+    puntaje = procesar_candidato(exp, mod, edu, area, hab_sel)[1]
     # Resultado del modelo: apto o no apto
-    if procesar_candidato(exp, mod, edu, area, hab_sel) == "apto":
-        messagebox.showinfo("Éxito", "Tu candidato es apto")
+    if procesar_candidato(exp, mod, edu, area, hab_sel)[0] == "apto":
+        messagebox.showinfo("Éxito", "Tu candidato es apto. Puntaje: "+str(puntaje))
     else:
-        messagebox.showinfo("Qué lástima!", "Tu candidato no es apto")
+        messagebox.showinfo("Qué lástima!", "Tu candidato no es apto. Puntaje: "+str(puntaje))
 
 
 def validar_entradas(exp, mod, edu, area):

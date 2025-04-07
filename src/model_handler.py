@@ -52,6 +52,7 @@ def procesar_candidato(exp, mod, edu, area, hab_sel):
 
     # Promedia los tres factores para obtener el puntaje final
     data["Puntos"] = (puntos_exp + puntos_edu + puntos_hab) / 3
+    puntaje_total = (puntos_exp + puntos_edu + puntos_hab) / 3
 
     # Elimina las columnas no necesarias para la predicción
     data.drop(["Aptitud", "Área"], axis=1, inplace=True)
@@ -62,4 +63,4 @@ def procesar_candidato(exp, mod, edu, area, hab_sel):
     # Traduce la predicción numérica a texto ("Apto" o "No apto") usando el mapeo definido en constants
     aptitud = constants.mapeo[prediccion]
 
-    return aptitud  #Retorna la aptitud del candidato
+    return aptitud,puntaje_total   #Retorna la aptitud del candidato y el puntaje
