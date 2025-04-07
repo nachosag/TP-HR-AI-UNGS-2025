@@ -1,47 +1,11 @@
 import joblib
-from tkinter import messagebox
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder, OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder
 import constants
 from script import calcular_experiencia, calcular_educacion
 
 
-def valores_validos(exp, mod, edu, area):
-    try:
-        experiencia = int(exp)
-        if experiencia < 0 or experiencia > 20:
-            messagebox.showerror(
-                "Error", "La experiencia debe estar entre 0 y 20 años."
-            )
-            return None
-    except ValueError:
-        messagebox.showerror("Error", "Ingrese una experiencia válida (número entero).")
-        return None
-    # if mod.strip().lower() in ["", "seleccione un modelo"]:
-    #     messagebox.showerror("Error", "Seleccione un modelo.")
-    #     return None
-    if mod == "Seleccione un modelo":
-        messagebox.showerror("Error", "Seleccione un modelo.")
-        return None
-
-    if (
-        not edu
-        or not area
-        or edu == "Seleccione su nivel educativo"
-        or area == "Seleccione el área"
-    ):
-        messagebox.showerror("Error", "Seleccione educación y área.")
-        return None
-    return True
-
-
 def procesar_candidato(exp, mod, edu, area, hab_sel):
-    print(f"Experiencia: {exp}")
-    print(f"Modelo: {mod}")
-    print(f"Educación: {edu}")
-    print(f"Área: {area}")
-    print(f"Habilidades seleccionadas: {hab_sel}")
-
     modelo = joblib.load(f"models/{mod}.joblib")
     data = pd.DataFrame(constants.plantilla, index=[0])
 
@@ -66,8 +30,7 @@ def procesar_candidato(exp, mod, edu, area, hab_sel):
     puntos_hab = len(hab_sel) / len(constants.areas[area])
     data["Puntos"] = (puntos_exp + puntos_edu + puntos_hab) / 3
     data.drop(["Aptitud", "Área"], axis=1, inplace=True)
-    data["Aptitud"] = modelo.predict(data)[0]
+    prediccion = modelo.predict(data)[0]
+    aptitud = constants.mapeo[prediccion]
 
-    print(data)
-
-    return True
+    return aptitud

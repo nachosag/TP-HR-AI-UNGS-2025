@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from constants import areas, niveles_educativos
 from .skills import actualizar_checkboxes
 from model_handler import procesar_candidato
@@ -121,6 +122,38 @@ def agregar_candidato(entry_experiencia, var_modelo, var_educacion, var_area):
     area = var_area.get()
     hab_sel = [hab for hab, var in habilidades_vars.items() if var.get() == 1]
 
-    if procesar_candidato(exp, mod, edu, area, hab_sel):
-        # print("Aptitud: Apto/No apto")
-        pass
+    if not validar_entradas(exp, mod, edu, area):
+        return
+
+    if procesar_candidato(exp, mod, edu, area, hab_sel) == "apto":
+        messagebox.showinfo("Éxito", "Tu candidato es apto")
+    else:
+        messagebox.showinfo("Qué lástima!", "Tu candidato no es apto")
+
+
+def validar_entradas(exp, mod, edu, area):
+    try:
+        experiencia = int(exp)
+        if experiencia < 0:
+            messagebox.showerror(
+                "Error",
+                "Ingrese una experiencia válida (número entero positivo o cero).",
+            )
+            return False
+    except ValueError:
+        messagebox.showerror("Error", "Ingrese una experiencia válida (número entero).")
+        return False
+
+    if mod == "Seleccione un modelo":
+        messagebox.showerror("Error", "Seleccione un modelo.")
+        return False
+
+    if edu == "Seleccione su nivel educativo":
+        messagebox.showerror("Error", "Seleccione su nivel educativo.")
+        return False
+
+    if area == "Seleccione el área":
+        messagebox.showerror("Error", "Seleccione su área.")
+        return False
+
+    return True

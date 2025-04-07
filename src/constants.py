@@ -46,3 +46,5 @@ probabilidad = {
     "Licenciatura": 0.4,
     "Ingeniería": 0.6,
 }
+
+mapeo = {1: "apto", 0: "no apto"}
