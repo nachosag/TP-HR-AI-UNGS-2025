@@ -3,6 +3,7 @@ from tkinter import messagebox
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, OrdinalEncoder, OneHotEncoder
 import constants
+from script import calcular_experiencia, calcular_educacion
 
 
 def valores_validos(exp, mod, edu, area):
@@ -60,12 +61,13 @@ def procesar_candidato(exp, mod, edu, area, hab_sel):
 
     data[["Experiencia"]] = mms.fit_transform(data[["Experiencia"]])
     data[["Educación"]] = edu_encoder.fit_transform(data[["Educación"]])
-    data.drop(["Puntos", "Aptitud", "Área"], axis=1, inplace=True)
+    puntos_exp = calcular_experiencia(int(exp))
+    puntos_edu = calcular_educacion(edu)
+    puntos_hab = len(hab_sel) / len(constants.areas[area])
+    data["Puntos"] = (puntos_exp + puntos_edu + puntos_hab) / 3
+    data.drop(["Aptitud", "Área"], axis=1, inplace=True)
+    data["Aptitud"] = modelo.predict(data)[0]
 
-    # print(data)
-
-    prediccion = modelo.predict(data)[0]
-
-    print(prediccion)
+    print(data)
 
     return True
