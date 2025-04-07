@@ -5,29 +5,50 @@ def actualizar_checkboxes(
     frame_habilidades, habilidades_vars, area_seleccionada, areas
 ):
     """
-    Update the checkboxes dynamically based on the selected area.
+    Actualiza dinámicamente los checkboxes de habilidades según el área seleccionada.
 
-    Args:
-        frame_habilidades (tk.Frame): The frame where checkboxes will be displayed.
-        habilidades_vars (dict): Dictionary to store the IntVar for each checkbox.
-        area_seleccionada (str): The selected area.
-        areas (dict): Dictionary mapping areas to their respective skills.
+    Parámetros:
+    - frame_habilidades (tk.Frame): Frame donde se mostrarán los checkboxes.
+    - habilidades_vars (dict): Diccionario que almacenará las variables IntVar asociadas a cada checkbox.
+    - area_seleccionada (str): El área actualmente seleccionada (clave del diccionario `areas`).
+    - areas (dict): Diccionario que asocia cada área (clave) con una lista de habilidades (valores).
+
+    Esta función:
+    1. Elimina cualquier checkbox previamente mostrado en el frame.
+    2. Verifica si el área seleccionada existe.
+    3. Crea checkboxes correspondientes a las habilidades del área.
     """
-    # Clear existing checkboxes
+    
+    # Eliminar todos los widgets actuales del frame (limpiar el frame)
     for widget in frame_habilidades.winfo_children():
         widget.destroy()
+
+    # Limpiar las variables anteriores asociadas a los checkboxes
     habilidades_vars.clear()
 
-    # Check if the selected area exists in the keys of the `areas` dictionary
+    # Verificar si el área seleccionada es válida
     if area_seleccionada in areas:
         habilidades = areas[area_seleccionada]
+
+        # Posición inicial en la grilla
         row_hab, col_hab = 0, 0
-        max_cols_hab = 2  # Number of columns for checkboxes
+        max_cols_hab = 2  # Número máximo de columnas para organizar los checkboxes
+
+        # Crear un checkbox por cada habilidad
         for habilidad in habilidades:
-            var = tk.IntVar()
-            chk = tk.Checkbutton(frame_habilidades, text=habilidad, variable=var)
+            var = tk.IntVar()  # Variable para guardar el estado del checkbox (0 o 1)
+            chk = tk.Checkbutton(
+                frame_habilidades,
+                text=habilidad,
+                variable=var
+            )
+            # Ubicar el checkbox en la grilla
             chk.grid(row=row_hab, column=col_hab, sticky=tk.W, padx=5, pady=2)
+
+            # Guardar la variable para referencia futura (por ejemplo, al guardar los datos)
             habilidades_vars[habilidad] = var
+
+            # Moverse a la siguiente posición de la grilla
             col_hab += 1
             if col_hab >= max_cols_hab:
                 col_hab = 0

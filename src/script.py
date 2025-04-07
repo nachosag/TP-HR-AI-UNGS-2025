@@ -1,17 +1,21 @@
 import numpy as np
 import pandas as pd
 from constants import (
-    plantilla,
-    areas,
-    niveles_educativos,
-    probabilidad,
+    plantilla,            # Diccionario base con las claves de habilidades inicializadas en 0
+    areas,                # Diccionario que asocia cada área con un conjunto de habilidades requeridas
+    niveles_educativos,   # Lista de niveles educativos disponibles
+    probabilidad,         # Diccionario que asigna a cada nivel educativo una probabilidad de tener habilidades
 )
 
+# Fijamos la semilla aleatoria para reproducibilidad
 np.random.seed(42)
 
+# Cantidad de candidatos a generar
 entradas = 50000
 datos = []
 
+
+# FUNCIONES DE CÁLCULO DE PUNTAJE
 
 def calcular_experiencia(experiencia):
     if experiencia == 0:
@@ -37,20 +41,22 @@ def calcular_educacion(educacion):
         return 1.0
 
 
-def calcular_habilidades(cantidad_habilidades):
-    return cantidad_habilidades * 0.2
 
+
+# BLOQUE PRINCIPAL
 
 if __name__ == "__main__":
     for _ in range(entradas):
-        candidato = plantilla.copy()
-        experiencia = np.random.randint(0, 20)
-        educacion = np.random.choice(niveles_educativos).strip()
-        area = np.random.choice(list(areas.keys())).strip()
-        habilidades_deseadas = areas.get(area)
-        cantidad_habilidades = 0
-        chances = probabilidad.get(educacion)
+        candidato = plantilla.copy()  # Creamos una copia de la plantilla base
+        experiencia = np.random.randint(0, 20)  # Años de experiencia aleatorios entre 0 y 19
+        educacion = np.random.choice(niveles_educativos).strip()  # Nivel educativo aleatorio
+        area = np.random.choice(list(areas.keys())).strip()       # Área profesional aleatoria
 
+        habilidades_deseadas = areas.get(area)  # Lista de habilidades requeridas por el área
+        cantidad_habilidades = 0
+        chances = probabilidad.get(educacion)   # Probabilidad de tener habilidades según educación
+
+        # Simulamos si el candidato posee o no cada habilidad deseada
         for habilidad in habilidades_deseadas:
             candidato[habilidad] = int(
                 np.random.choice([0, 1], p=[1 - chances, chances])
@@ -58,30 +64,38 @@ if __name__ == "__main__":
             if candidato[habilidad] == 1:
                 cantidad_habilidades += 1
 
+        # Asignamos valores al candidato
         candidato["Experiencia"] = experiencia
         candidato["Educación"] = educacion
         candidato["Área"] = area
 
+        # Calculamos los puntos de evaluación
         puntos_experiencia = calcular_experiencia(experiencia)
         puntos_educacion = calcular_educacion(educacion)
         puntos_habilidades = cantidad_habilidades / len(habilidades_deseadas)
 
-        candidato["Puntos"] = (
-            puntos_experiencia + puntos_educacion + puntos_habilidades
-        ) / 3
+        # Promedio de los tres factores
+        candidato["Puntos"] = (puntos_experiencia + puntos_educacion + puntos_habilidades) / 3
+
+        # Determinamos si es apto o no
         candidato["Aptitud"] = "Apto" if candidato["Puntos"] >= 0.7 else "No apto"
 
         datos.append(candidato)
 
+    # Creamos el DataFrame con todos los candidatos
     df = pd.DataFrame(datos)
+
+    # Dividimos entre aptos y no aptos
     aptos = df[df["Aptitud"] == "Apto"]
     no_aptos = df[df["Aptitud"] == "No apto"]
 
+    # Balanceamos el dataset para que haya la misma cantidad de aptos y no aptos
     if len(aptos) < len(no_aptos):
         no_aptos = no_aptos.sample(n=len(aptos), random_state=42)
     else:
         aptos = aptos.sample(n=len(no_aptos), random_state=42)
 
+    # Mezclamos ambos grupos y lo guardamos en un archivo CSV
     df_balanceado = pd.concat([aptos, no_aptos]).sample(frac=1, random_state=42)
 
     df_balanceado.to_csv("./data/candidatos.csv", index=False)

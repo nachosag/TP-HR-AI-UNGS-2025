@@ -1,3 +1,5 @@
+# Plantilla base que representa la estructura de un candidato.
+# Todos los campos comienzan vacíos o en cero y se completan al generar los datos o al ingresar un candidato.
 plantilla = {
     "Experiencia": 0,
     "Educación": "",
@@ -20,6 +22,7 @@ plantilla = {
     "Aptitud": "",
 }
 
+# Diccionario que agrupa habilidades requeridas por cada área de desarrollo.
 areas = {
     "Desarrollo Móvil": [
         "Kotlin",
@@ -38,8 +41,11 @@ areas = {
     "Desarrollo de Juegos": ["C# Unity", "C++ Unreal Engine", "Python"],
 }
 
+# Lista ordenada de niveles educativos posibles para un candidato.
 niveles_educativos = ["Ninguna", "Tecnicatura", "Licenciatura", "Ingeniería"]
 
+# Probabilidad de que un candidato tenga una habilidad según su nivel educativo.
+# Se usa para simular candidatos y ajustar el peso del conocimiento técnico.
 probabilidad = {
     "Ninguna": 0.1,
     "Tecnicatura": 0.2,
@@ -47,4 +53,5 @@ probabilidad = {
     "Ingeniería": 0.6,
 }
 
+# Mapeo de predicciones del modelo: 1 corresponde a "apto" y 0 a "no apto".
 mapeo = {1: "apto", 0: "no apto"}
