@@ -21,6 +21,11 @@ plantilla = {
 }
 
 areas = {
+    "Desarrollo Móvil": [
+        "Kotlin",
+        "Swift",
+        "Flutter",
+    ],
     "Desarrollo Web": [
         "HTML",
         "CSS",
@@ -29,11 +34,6 @@ areas = {
         "Angular",
         "SQL",
         "NoSQL",
-    ],
-    "Desarrollo Móvil": [
-        "Kotlin",
-        "Swift",
-        "Flutter",
     ],
     "Desarrollo de Juegos": ["C# Unity", "C++ Unreal Engine", "Python"],
 }
